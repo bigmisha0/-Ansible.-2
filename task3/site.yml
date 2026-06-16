@@ -1,0 +1,11 @@
+---
+# Главный плейбук задания 3.
+# Подключает единственную роль apache_info, которая выполняет
+# установку Apache, развёртывание index.html, открытие порта,
+# запуск сервиса и проверку доступности.
+
+- name: Configure Apache web server with system info page
+  hosts: all
+  become: true
+  roles:
+    - apache_info

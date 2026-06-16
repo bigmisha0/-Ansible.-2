@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System info - {{ ansible_hostname }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 50%; }
+        td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>System information for {{ ansible_hostname }}</h1>
+    <table>
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr>
+            <td>CPU</td>
+            <td>{{ ansible_processor_vcpus }} vCPU(s) ({{ ansible_processor[-1] }})</td>
+        </tr>
+        <tr>
+            <td>RAM</td>
+            <td>{{ ansible_memtotal_mb }} MB</td>
+        </tr>
+        <tr>
+            <td>First HDD ({{ ansible_devices.keys() | list | first }})</td>
+            <td>{{ ansible_devices[ansible_devices.keys() | list | first].size }}</td>
+        </tr>
+        <tr>
+            <td>IP address</td>
+            <td>{{ ansible_default_ipv4.address }}</td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,55 @@
+---
+# Задание 3
+# Роль apache_info:
+#  1. Устанавливает веб-сервер Apache.
+#  2. Разворачивает index.html из jinja2-шаблона с характеристиками хоста
+#     (CPU, RAM, размер первого диска, IP-адрес), используя Ansible facts.
+#     При изменении файла конфигурации срабатывает handler перезапуска Apache.
+#  3. Открывает порт 80 (если требуется), запускает сервис и добавляет
+#     его в автозагрузку.
+#  4. Проверяет доступность веб-сайта (код ответа 200).
+
+- name: Install Apache web server
+  ansible.builtin.package:
+    name: "{{ apache_package }}"
+    state: present
+
+- name: Deploy index.html with system information
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ apache_doc_root }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Apache
+
+- name: Ensure firewalld allows HTTP (RedHat family)
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    immediate: true
+    state: enabled
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Ensure ufw allows HTTP (Debian family)
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Start and enable Apache service
+  ansible.builtin.systemd:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: true
+
+- name: Verify that the website responds with HTTP 200
+  ansible.builtin.uri:
+    url: "http://localhost/"
+    status_code: 200
+  register: apache_check
+
+- name: Show website check result
+  ansible.builtin.debug:
+    msg: "Website check status: {{ apache_check.status }}"

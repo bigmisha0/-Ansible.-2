@@ -1,0 +1,24 @@
+---
+# Задание 1.3
+# Изменяет приветствие системы (/etc/motd) на произвольное.
+# Текст приветствия задаётся переменной motd_message.
+
+- name: Set custom MOTD message
+  hosts: all
+  become: true
+
+  vars:
+    motd_message: |
+      ============================================
+       Welcome to the managed server!
+       Unauthorized access is strictly prohibited.
+      ============================================
+
+  tasks:
+    - name: Write custom message to /etc/motd
+      ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: '0644'

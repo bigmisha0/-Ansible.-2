@@ -1,0 +1,31 @@
+---
+# Задание 2
+# Модификация плейбука 1.3: приветствие теперь содержит
+# IP-адрес и hostname управляемого хоста, а также пожелание
+# хорошего дня системному администратору.
+#
+# Значения IP-адреса и hostname берутся из Ansible facts
+# (ansible_default_ipv4.address и ansible_hostname),
+# которые автоматически собираются перед выполнением задач.
+
+- name: Set personalized MOTD with host facts
+  hosts: all
+  become: true
+
+  vars:
+    motd_message: |
+      ============================================
+       Hostname:   {{ ansible_hostname }}
+       IP address: {{ ansible_default_ipv4.address }}
+
+       Have a great day, system administrator!
+      ============================================
+
+  tasks:
+    - name: Write personalized message to /etc/motd
+      ansible.builtin.copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: '0644'

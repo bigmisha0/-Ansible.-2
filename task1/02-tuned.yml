@@ -1,0 +1,20 @@
+---
+# Задание 1.2
+# Устанавливает пакет tuned из стандартного репозитория,
+# запускает его как сервис systemd и добавляет в автозагрузку.
+
+- name: Install and enable tuned service
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install tuned package
+      ansible.builtin.package:
+        name: tuned
+        state: present
+
+    - name: Start tuned service and enable it on boot
+      ansible.builtin.systemd:
+        name: tuned
+        state: started
+        enabled: true

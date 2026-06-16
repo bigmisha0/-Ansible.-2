@@ -1,0 +1,35 @@
+---
+# Задание 1.1
+# Скачивает архив Apache Kafka, создаёт каталог для распаковки
+# и распаковывает скачанный архив.
+
+- name: Download and extract Kafka archive
+  hosts: all
+  become: true
+
+  vars:
+    kafka_url: "https://downloads.apache.org/kafka/3.9.2/kafka_2.13-3.9.2.tgz"
+    kafka_archive_path: "/tmp/kafka_2.13-3.7.0.tgz"
+    kafka_extract_dir: "/opt/kafka"
+
+  tasks:
+    - name: Create directory for extraction
+      ansible.builtin.file:
+        path: "{{ kafka_extract_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Download Kafka archive
+      ansible.builtin.get_url:
+        url: "{{ kafka_url }}"
+        dest: "{{ kafka_archive_path }}"
+        mode: '0644'
+
+    - name: Extract Kafka archive into target directory
+      ansible.builtin.unarchive:
+        src: "{{ kafka_archive_path }}"
+        dest: "{{ kafka_extract_dir }}"
+        remote_src: true
+        extra_opts: [--strip-components=1]

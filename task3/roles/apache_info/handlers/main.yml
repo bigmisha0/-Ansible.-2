@@ -1,0 +1,8 @@
+---
+# Handler срабатывает только тогда, когда задача deploy index.html
+# сообщает об изменении файла (notify: Restart Apache).
+
+- name: Restart Apache
+  ansible.builtin.systemd:
+    name: "{{ apache_service }}"
+    state: restarted
